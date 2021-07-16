@@ -18,15 +18,18 @@ public class JpaMain {
         try {//m은 멤버 자체를 가리킨다!
             Member member = new Member();
             member.setUsername("member1");
+            member.setAge(21);
             em.persist(member);
 
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            List<Object[]> resultList = em.createQuery("select distinct m.username, m.age from Member m").getResultList();//현재 타입이 없음.
-            Object[] result = resultList.get(0);
-            System.out.println("username = " + result[0]);
-            System.out.println("age = " + result[1]);
+            List<MemberDTO> result = em.createQuery("select distinct new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+                    .getResultList();//현재 타입이 없음.
+
+            MemberDTO memberDTO = result.get(0);
+            System.out.println("memberDTO.username = " + memberDTO.getUsername());
+            System.out.println("memberDTO.age = " + memberDTO.getAge());
 
 //            List<Team> teamResult = em.createQuery("select t from Member m join m.team t", Team.class).getResultList();
 //            em.createQuery("select o.address from Order o", Address.class).getResultList();
