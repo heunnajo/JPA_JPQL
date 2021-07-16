@@ -19,11 +19,26 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("member1");
             em.persist(member);
-            //TypeQuery라는 제네릭을 반환한다! 왜냐하면 타입정보를 명확하게 줬기 때문!
-            Member result = em.createQuery("select m from Member as m where m.username = :username", Member.class)
-                    .setParameter("username", "member1")
-                    .getSingleResult();
-            System.out.println("result = " + result);
+
+            em.flush();//DB에 반영
+            em.clear();//영속성 컨텍스트 비운다.
+
+            List resultList = em.createQuery("select distinct m.username, m.age from Member m").getResultList();//현재 타입이 없음.
+            Object o = resultList.get(0);//Object배열이 들어가있을 것이다!
+            Object[] result = (Object[]) o;
+            System.out.println("username = " + result[0]);
+            System.out.println("age = " + result[1]);
+
+//            List<Team> teamResult = em.createQuery("select t from Member m join m.team t", Team.class).getResultList();
+//            em.createQuery("select o.address from Order o", Address.class).getResultList();
+//            em.createQuery("select distinct m.username, m.age from Member B");
+
+//            List<Member> memberResult = em.createQuery("select m from Member m", Member.class).getResultList();
+//            List<Team> teamResult = em.createQuery("select m.team from Member m", Team.class).getResultList();
+//            Member findMember = memberResult.get(0);
+//            findMember.setAge(20);//값이 바뀌면 영속성 컨텍스트에서 관리되는 것. 안 바뀌면 관리되지 않는 것.
+            //영속성 컨텍스트가 관리하면 현재 영속성 컨텍스트가 비어있기 때문에 DB로 조회한다.
+
 
             tx.commit();
         } catch (Exception e){
