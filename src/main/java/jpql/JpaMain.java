@@ -31,8 +31,8 @@ public class JpaMain {
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            //theta join이기 때문에 따로 조인함!
-            String query = "select m from Member m left join Team t on m.username = t.name";//파라미터 바인딩 필요
+            String query = "select mm.age, mm.username " +
+                                "from (select m.age, m.username from Member m) as mm";
 
             List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
