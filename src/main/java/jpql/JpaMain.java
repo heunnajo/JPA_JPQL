@@ -16,29 +16,25 @@ public class JpaMain {
         tx.begin();
 
         try {//m은 멤버 자체를 가리킨다!
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(21);
-            em.persist(member);
+            for(int i=0;i<100;i++){
+                Member member = new Member();
+                member.setUsername("member"+i);
+                member.setAge(i);
+                em.persist(member);
+            }
 
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            //여러 값을 query로 조회하기
-            System.out.println("================================");
-            Query query = em.createQuery("select m.username,m.age from Member m");
-            System.out.println("query = " + query);
+            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(10)
+                    .getResultList();
 
-//            List<Team> teamResult = em.createQuery("select t from Member m join m.team t", Team.class).getResultList();
-//            em.createQuery("select o.address from Order o", Address.class).getResultList();
-//            em.createQuery("select distinct m.username, m.age from Member B");
-
-//            List<Member> memberResult = em.createQuery("select m from Member m", Member.class).getResultList();
-//            List<Team> teamResult = em.createQuery("select m.team from Member m", Team.class).getResultList();
-//            Member findMember = memberResult.get(0);
-//            findMember.setAge(20);//값이 바뀌면 영속성 컨텍스트에서 관리되는 것. 안 바뀌면 관리되지 않는 것.
-            //영속성 컨텍스트가 관리하면 현재 영속성 컨텍스트가 비어있기 때문에 DB로 조회한다.
-
+            System.out.println("result.size = " + result.size());
+            for (Member member : result) {
+                System.out.println("member = " + member);
+            }
 
             tx.commit();
         } catch (Exception e){
