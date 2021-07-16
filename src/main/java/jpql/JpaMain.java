@@ -24,12 +24,10 @@ public class JpaMain {
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            List<MemberDTO> result = em.createQuery("select distinct new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
-                    .getResultList();//현재 타입이 없음.
-
-            MemberDTO memberDTO = result.get(0);
-            System.out.println("memberDTO.username = " + memberDTO.getUsername());
-            System.out.println("memberDTO.age = " + memberDTO.getAge());
+            //여러 값을 query로 조회하기
+            System.out.println("================================");
+            Query query = em.createQuery("select m.username,m.age from Member m");
+            System.out.println("query = " + query);
 
 //            List<Team> teamResult = em.createQuery("select t from Member m join m.team t", Team.class).getResultList();
 //            em.createQuery("select o.address from Order o", Address.class).getResultList();
