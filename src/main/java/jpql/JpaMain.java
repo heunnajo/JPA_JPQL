@@ -23,9 +23,8 @@ public class JpaMain {
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            List resultList = em.createQuery("select distinct m.username, m.age from Member m").getResultList();//현재 타입이 없음.
-            Object o = resultList.get(0);//Object배열이 들어가있을 것이다!
-            Object[] result = (Object[]) o;
+            List<Object[]> resultList = em.createQuery("select distinct m.username, m.age from Member m").getResultList();//현재 타입이 없음.
+            Object[] result = resultList.get(0);
             System.out.println("username = " + result[0]);
             System.out.println("age = " + result[1]);
 
