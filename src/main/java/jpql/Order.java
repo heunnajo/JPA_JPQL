@@ -13,7 +13,7 @@ public class Order {
     private Address address;
 
 //    @OneToMany(mappedBy = "order")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="PRODUCT_ID")
     private Product product;
 

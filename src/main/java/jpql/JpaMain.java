@@ -15,26 +15,28 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
-        try {//m은 멤버 자체를 가리킨다!
-            for(int i=0;i<100;i++){
-                Member member = new Member();
-                member.setUsername("member"+i);
-                member.setAge(i);
-                em.persist(member);
-            }
+        try {
+            //Member에 Team을 저장하기 위해 Team 먼저.
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setAge(20);
+            member.setTeam(team);
+
+            em.persist(member);
 
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                    .setFirstResult(1)
-                    .setMaxResults(10)
-                    .getResultList();
+            String query = "select m from Member m, Team t where m.username = t.name";
 
-            System.out.println("result.size = " + result.size());
-            for (Member member : result) {
-                System.out.println("member = " + member);
-            }
+            List<Member> result = em.createQuery(query, Member.class)
+                    .getResultList();
+//                    .setFirstResult(1)
+//                    .setMaxResults(10)
 
             tx.commit();
         } catch (Exception e){
