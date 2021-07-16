@@ -16,30 +16,13 @@ public class JpaMain {
         tx.begin();
 
         try {
-            //Member에 Team을 저장하기 위해 Team 먼저.
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Book book = new Book();
+            book.setName("헨젤과 그레텔");
+            book.setPrice(20000);
 
-            Member member = new Member();
-            member.setUsername("teamA");
-            member.setAge(20);
-            member.setTeam(team);
+            em.persist(book);
 
-            em.persist(member);
-
-            em.flush();//DB에 반영
-            em.clear();//영속성 컨텍스트 비운다.
-
-            String query = "select mm.age, mm.username " +
-                                "from (select m.age, m.username from Member m) as mm";
-
-            List<Member> result = em.createQuery(query, Member.class)
-                    .getResultList();
-            System.out.println("result.siz = " + result.size());
-//                    .setFirstResult(1)
-//                    .setMaxResults(10)
-
+            em.createQuery("select i from Item i where type(i) = Book",Item.class).getResultList();
             tx.commit();
         } catch (Exception e){
             tx.rollback();
