@@ -22,7 +22,7 @@ public class JpaMain {
             em.persist(team);
 
             Member member = new Member();
-            member.setUsername("member1");
+            member.setUsername("teamA");
             member.setAge(20);
             member.setTeam(team);
 
@@ -31,10 +31,12 @@ public class JpaMain {
             em.flush();//DB에 반영
             em.clear();//영속성 컨텍스트 비운다.
 
-            String query = "select m from Member m, Team t where m.username = t.name";
+            //theta join이기 때문에 따로 조인함!
+            String query = "select m from Member m left join Team t on m.username = t.name";//파라미터 바인딩 필요
 
             List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
+            System.out.println("result.siz = " + result.size());
 //                    .setFirstResult(1)
 //                    .setMaxResults(10)
 
