@@ -26,31 +26,38 @@ public class JpaMain {
 
             Member member1 = new Member();
             member1.setUsername("회원1");
+            member1.setAge(0);
             member1.setTeam(teamA);
             em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("회원2");
+            member2.setAge(0);
             member2.setTeam(teamA);
             em.persist(member2);
 
             Member member3 = new Member();
             member3.setUsername("회원3");
+            member3.setAge(0);
             member3.setTeam(teamB);
             em.persist(member3);
 
             em.flush();
             em.clear();
+            //영속성 컨텍스트의 member1,2,3의 나이는 모두 0
 
-            //String query = "select m From Member m where m.team = :team";
+            //1. FLUSH(DB반영) : DB에 영속성 데이터(나이 = 0) 넣는다! 영속성 컨텍스트엔는 여전히 나이=0으로 남아잇음.
+            //2. 아래 벌크 연산으로 나이는 20으로 업데이트.
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+            System.out.println("resultCount = " + resultCount);//DB에서 member1,2,3의 나이는 모두 20
 
-            List<Member> members = em.createNamedQuery("Member.findByUsername",Member.class)
-                    .setParameter("username", "회원1")
-                    .getResultList();
-            for (Member member : members) {
-                System.out.println("member = " + member);
-            }
-            
+            //아래에서 member 나이 출력해보면 모두 0(영속성 컨텍스트)으로 나온는 것을 알 수 있음.
+            System.out.println("member1.getAge() = " + member1.getAge());
+            System.out.println("member2.getAge() = " + member2.getAge());
+            System.out.println("member3.getAge() = " + member3.getAge());
+
+
             tx.commit();
         } catch (Exception e){
             tx.rollback();
