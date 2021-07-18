@@ -16,24 +16,42 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername(null);
-            member.setAge(10);
+            Team teamA = new Team();
+            teamA.setName("팀A");
+            em.persist(teamA);
 
-            em.persist(member);
+            Team teamB = new Team();
+            teamB.setName("팀B");
+            em.persist(teamB);
 
-            String query ="select coalesce(m.username, '이름 없는 회원') as username " + "from Member m ";
-//                    "select " +
-//                            "case when m.age <= 10 then '학생요금' " +
-//                            "     when m.age >= 60 then '경로요금' " +
-//                            "     else '일반요금' "+
-//                            "end " +
-//                    "from Member m";
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setTeam(teamA);
+            em.persist(member1);
 
-            List<String> result = em.createQuery(query, String.class)
-                    .getResultList();
-            for (String s : result) {
-                System.out.println("s = " + s);
+            Member member2 = new Member();
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
+
+            em.flush();
+            em.clear();
+
+            String query = "select m From Member m join fetch m.team";
+
+            List<Member> result = em.createQuery(query, Member.class).getResultList();//실제 엔티티가 담김.?
+
+            for (Member member : result) {//team은 프록시, 지연 로딩 발생하고, getName발생하면 DB에 쿼리 날린다.
+                System.out.println("member = " + member.getUsername()+","+member.getTeam().getName());
+                //회원1, 팀A(SQL)
+                //회원2, 팀A(1차 캐시)
+                //회원3, 팀B(SQL)
+
             }
 
             tx.commit();
