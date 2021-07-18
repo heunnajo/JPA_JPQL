@@ -52,11 +52,15 @@ public class JpaMain {
                     .executeUpdate();
             System.out.println("resultCount = " + resultCount);//DB에서 member1,2,3의 나이는 모두 20
 
-            //아래에서 member 나이 출력해보면 모두 0(영속성 컨텍스트)으로 나온는 것을 알 수 있음.
-            System.out.println("member1.getAge() = " + member1.getAge());
-            System.out.println("member2.getAge() = " + member2.getAge());
-            System.out.println("member3.getAge() = " + member3.getAge());
+            em.clear();//DB에서 데이터 가져오도록 영속성 컨텍스트 초기화
 
+            Member findMember = em.find(Member.class, member1.getId());
+            System.out.println("findMember.getAge() = " + findMember.getAge());
+
+            //아래에서 member 나이 출력해보면 모두 0(영속성 컨텍스트)으로 나온는 것을 알 수 있음.
+            //System.out.println("member1.getAge() = " + member1.getAge());
+            //System.out.println("member2.getAge() = " + member2.getAge());
+            //System.out.println("member3.getAge() = " + member3.getAge());
 
             tx.commit();
         } catch (Exception e){
