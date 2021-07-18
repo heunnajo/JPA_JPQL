@@ -42,16 +42,15 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m From Member m join fetch m.team";
+            String query = "select distinct t From Team t join fetch t.members";
 
-            List<Member> result = em.createQuery(query, Member.class).getResultList();//실제 엔티티가 담김.?
+            List<Team> result = em.createQuery(query, Team.class).getResultList();//실제 엔티티가 담김.?
 
-            for (Member member : result) {//team은 프록시, 지연 로딩 발생하고, getName발생하면 DB에 쿼리 날린다.
-                System.out.println("member = " + member.getUsername()+","+member.getTeam().getName());
-                //회원1, 팀A(SQL)
-                //회원2, 팀A(1차 캐시)
-                //회원3, 팀B(SQL)
-
+            for (Team team : result) {//team은 프록시, 지연 로딩 발생하고, getName발생하면 DB에 쿼리 날린다.
+                System.out.println("team = " + team.getName()+"|members="+team.getMembers().size());
+                for(Member member : team.getMembers()){
+                    System.out.println("-  member = " + member);
+                }
             }
 
             tx.commit();
